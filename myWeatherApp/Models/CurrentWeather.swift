@@ -12,7 +12,9 @@ struct DailyWeatherResponse: Codable {
     let daily: [DailyWeather]
 }
 struct CurrentWeatherObject: Codable {
+    let dt: Int
     let temp: Double
+    let weather: [WeatherValues]
 }
 
 struct DailyWeather: Codable {

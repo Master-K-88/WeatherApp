@@ -20,10 +20,10 @@
                         <rect key="frame" x="5" y="10" width="433" height="137.5"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OaE-kY-lSV">
-                                <rect key="frame" x="0.0" y="30" width="100" height="77.5"/>
+                                <rect key="frame" x="0.0" y="30" width="80" height="77.5"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tuesday" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7LA-tu-ei5">
-                                        <rect key="frame" x="18" y="28.5" width="64" height="20.5"/>
+                                        <rect key="frame" x="8" y="28.5" width="64" height="20.5"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -33,13 +33,13 @@
                                 <constraints>
                                     <constraint firstItem="7LA-tu-ei5" firstAttribute="centerY" secondItem="OaE-kY-lSV" secondAttribute="centerY" id="BhD-hJ-NZ6"/>
                                     <constraint firstItem="7LA-tu-ei5" firstAttribute="centerX" secondItem="OaE-kY-lSV" secondAttribute="centerX" id="UeY-3c-qcr"/>
-                                    <constraint firstAttribute="width" constant="100" id="cQ8-af-799"/>
+                                    <constraint firstAttribute="width" constant="80" id="cQ8-af-799"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wSz-vH-ee5">
                                 <rect key="frame" x="100" y="20" width="213" height="97.5"/>
                                 <subviews>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="rainy" translatesAutoresizingMaskIntoConstraints="NO" id="Hz3-Xu-zeK">
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Hz3-Xu-zeK">
                                         <rect key="frame" x="66.5" y="8.5" width="80" height="80"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="80" id="QCg-Nj-EPf"/>
@@ -85,6 +85,7 @@
                             <constraint firstAttribute="trailing" secondItem="wSz-vH-ee5" secondAttribute="trailing" constant="120" id="0Ix-AS-quK"/>
                             <constraint firstItem="wSz-vH-ee5" firstAttribute="top" secondItem="7wK-5o-PZM" secondAttribute="top" constant="20" id="7ky-0z-Hth"/>
                             <constraint firstAttribute="bottom" secondItem="wSz-vH-ee5" secondAttribute="bottom" constant="20" id="GIW-FG-t7W"/>
+                            <constraint firstItem="qCO-18-oSL" firstAttribute="leading" secondItem="wSz-vH-ee5" secondAttribute="trailing" constant="20" id="LTm-MP-egA"/>
                             <constraint firstAttribute="bottom" secondItem="qCO-18-oSL" secondAttribute="bottom" id="N8H-Dt-J0Y"/>
                             <constraint firstItem="dbH-WS-xTL" firstAttribute="top" secondItem="7wK-5o-PZM" secondAttribute="top" constant="30" id="Pn7-zV-NXX"/>
                             <constraint firstAttribute="trailing" secondItem="dbH-WS-xTL" secondAttribute="trailing" id="UPw-tF-ahX"/>
@@ -116,7 +117,4 @@
             <point key="canvasLocation" x="160.86956521739131" y="78.683035714285708"/>
         </tableViewCell>
     </objects>
-    <resources>
-        <image name="rainy" width="12" height="12"/>
-    </resources>
 </document>

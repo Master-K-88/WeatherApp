@@ -24,7 +24,7 @@ class WeatherTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
-        backgroundColor = .gray
+        backgroundColor = #colorLiteral(red: 0.2032072842, green: 0.4291871786, blue: 0.7031712532, alpha: 1)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -35,8 +35,8 @@ class WeatherTableViewCell: UITableViewCell {
     
     func configureCell(with model: DailyWeather) {
 //        self.day.text = String(model.dt)
-        self.maxTempLabel.text = "\(String(format: "%.0f", model.temp.max))°C"
-        self.minTempLabel.text = "\(String(format: "%.0f", model.temp.min))°C"
+        self.maxTempLabel.text = "\(String(format: "%.0f", model.temp.max))°"
+        self.minTempLabel.text = "\(String(format: "%.0f", model.temp.min))°"
         self.day.text = getDayForDate(Date(timeIntervalSince1970: Double(model.dt)))
         self.tempIcon.image = updateIcon(model.weather[0].main)!
     }
@@ -54,8 +54,10 @@ class WeatherTableViewCell: UITableViewCell {
             return UIImage(named: "sun")
         } else if main == "Clouds" {
             return UIImage(named: "cloudy")
-        } else {
+        } else if main == "Rain"{
             return UIImage(named: "rainy")
+        } else {
+            return UIImage()
         }
     }
     

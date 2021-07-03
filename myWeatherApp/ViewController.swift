@@ -23,6 +23,7 @@ class ViewController: UIViewController {
     let locationManager = CLLocationManager()
     var model = [DailyWeather]()
     var currentLocation: CLLocation?
+    var currentWeather: CurrentWeatherObject?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,6 +32,8 @@ class ViewController: UIViewController {
         // Setting Delegate and Datasource for the table
         tableView.delegate = self
         tableView.dataSource = self
+        self.view.backgroundColor = #colorLiteral(red: 0.2032072842, green: 0.4291871786, blue: 0.7031712532, alpha: 1)
+        self.tableView.backgroundColor = #colorLiteral(red: 0.2032072842, green: 0.4291871786, blue: 0.7031712532, alpha: 1)
         
         // Register two cell (The hourly and Daily Cells)
         tableView.register(HourlyTableViewCell.nib(),
@@ -68,7 +71,7 @@ class ViewController: UIViewController {
         let long = currentLocation.coordinate.longitude
         let lat = currentLocation.coordinate.latitude
         
-        let url = URL(string: "https://api.openweathermap.org/data/2.5/onecall?lat=\(lat)&lon=\(long)&exclude=currently,minutely,hourly&appid=9250e45e424e1ca6a05fe8f347df00aa&units=metric")
+        let url = URL(string: "https://api.openweathermap.org/data/2.5/onecall?lat=\(lat)&lon=\(long)&exclude=minutely,hourly&appid=9250e45e424e1ca6a05fe8f347df00aa&units=metric")
         
         URLSession.shared.dataTask(with: url!, completionHandler: { [self] data, response, error in
             // validation
@@ -86,20 +89,57 @@ class ViewController: UIViewController {
             guard let result = json else {
                 return
             }
-            guard let currentTemp = result.current?.temp else {
+            guard let currentTemp = result.current else {
                 return
             }
             let dailyData = result.daily
             self.dailyDataEntry.append(contentsOf: dailyData)
+            self.currentWeather = currentTemp
             print(currentTemp)
 //            print("The current temperature is: \(currentTemp)")
             DispatchQueue.main.async {
                 self.tableView.reloadData()
+                self.tableView.tableHeaderView = self.createTableHeader()
             }
             // update userInterface
         }).resume()
         
         print("The Longitude: \(long) and the Latitude: \(lat)")
+    }
+    func createTableHeader() -> UIView {
+        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: view.frame.size.width))
+        
+        let currentLocation = UILabel(frame: CGRect(x: 0,
+                                                    y: headerView.frame.size.height / 4,
+                                                    width: view.frame.size.width,
+                                                    height: headerView.frame.size.height / 5))
+        let currentTemp = UILabel(frame: CGRect(x: 0,
+                                                y: currentLocation.frame.size.height * 0.75 + currentLocation.frame.size.height,
+                                                width: view.frame.size.width,
+                                                height: headerView.frame.size.height / 5))
+        let weatherDetails = UILabel(frame: CGRect(x: 0,
+                                                       y: currentLocation.frame.size.height * 0.35 + currentTemp.frame.size.height + currentLocation.frame.size.height,
+                                                       width: view.frame.size.width,
+                                                       height: headerView.frame.size.height / 5))
+        guard let currentWeatherDetail = self.currentWeather else {
+            return UIView()
+        }
+        
+        currentTemp.text = "\(String(format: "%.0f", currentWeatherDetail.temp))°"
+        currentTemp.font = UIFont(name: "Helvetica", size: 70)
+        
+        currentLocation.text = "Lagos"
+        
+        weatherDetails.text = currentWeatherDetail.weather[0].description
+            
+        
+        
+        [currentTemp, currentLocation, weatherDetails].forEach{headerView.addSubview($0)}
+        [currentTemp, currentLocation, weatherDetails].forEach{$0.textAlignment = .center}
+        
+        headerView.backgroundColor = #colorLiteral(red: 0.2032072842, green: 0.4291871786, blue: 0.7031712532, alpha: 1)
+        
+        return headerView
     }
 
 }
