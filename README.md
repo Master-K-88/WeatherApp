@@ -6,3 +6,5 @@
   * API request
   * Table view
   * custom cell
+  * Collection view cell
+  * MVVM Architecture
