@@ -6,24 +6,16 @@
 //
 
 import UIKit
-import CoreLocation
 
 class ViewController: UIViewController {
     
-    var dailyDataEntry = [DailyWeather]()
+    let viewModel = ViewModel()
+    
     private let tableView: UITableView = {
         let table = UITableView()
         table.separatorEffect = .none
         return table
     }()
-    let cityname = "Lagos"
-    let stateCode = 101001
-    let key = "55ef47bf09a41327217d8771c9297234"
-    let countryCode = "+234"
-    let locationManager = CLLocationManager()
-    var model = [DailyWeather]()
-    var currentLocation: CLLocation?
-    var currentWeather: CurrentWeatherObject?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,11 +32,7 @@ class ViewController: UIViewController {
                            forCellReuseIdentifier: HourlyTableViewCell.identifier)
         tableView.register(WeatherTableViewCell.nib(),
                            forCellReuseIdentifier: WeatherTableViewCell.identifier)
-        
-        setupLocation()
-        requestWeatherForLocation()
-        
-        // Do any additional setup after loading the view.
+        viewModel.networkCall()
     }
 
     override func viewDidLayoutSubviews() {
@@ -57,55 +45,19 @@ class ViewController: UIViewController {
                                  height: view.frame.size.height)
     }
     
-    // Location
-    func setupLocation() {
-        locationManager.delegate = self
-        locationManager.requestWhenInUseAuthorization()
-        locationManager.startUpdatingLocation()
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        Network.shared.completionHandler = { [weak self] result, current in
+            self?.viewModel.dailyDataEntry = result
+            self?.viewModel.currentWeather = current
+            DispatchQueue.main.async {
+                self?.tableView.reloadData()
+                self?.tableView.tableHeaderView = self?.createTableHeader()
+            }
+        }
     }
     
-    func requestWeatherForLocation() {
-        guard let currentLocation = currentLocation else {
-            return
-        }
-        let long = currentLocation.coordinate.longitude
-        let lat = currentLocation.coordinate.latitude
-        
-        let url = URL(string: "https://api.openweathermap.org/data/2.5/onecall?lat=\(lat)&lon=\(long)&exclude=minutely,hourly&appid=9250e45e424e1ca6a05fe8f347df00aa&units=metric")
-        
-        URLSession.shared.dataTask(with: url!, completionHandler: { [self] data, response, error in
-            // validation
-            guard let data = data, error == nil else {
-//                print("Error12: \((error?.localizedDescription))")
-                return
-            }
-            //convert data to models
-            var json: DailyWeatherResponse?
-            do {
-                json = try JSONDecoder().decode(DailyWeatherResponse.self, from: data)
-            } catch {
-                print("error54: \(error)")
-            }
-            guard let result = json else {
-                return
-            }
-            guard let currentTemp = result.current else {
-                return
-            }
-            let dailyData = result.daily
-            self.dailyDataEntry.append(contentsOf: dailyData)
-            self.currentWeather = currentTemp
-            print(currentTemp)
-//            print("The current temperature is: \(currentTemp)")
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-                self.tableView.tableHeaderView = self.createTableHeader()
-            }
-            // update userInterface
-        }).resume()
-        
-        print("The Longitude: \(long) and the Latitude: \(lat)")
-    }
     func createTableHeader() -> UIView {
         let headerView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: view.frame.size.width))
         
@@ -121,7 +73,8 @@ class ViewController: UIViewController {
                                                        y: currentLocation.frame.size.height * 0.35 + currentTemp.frame.size.height + currentLocation.frame.size.height,
                                                        width: view.frame.size.width,
                                                        height: headerView.frame.size.height / 5))
-        guard let currentWeatherDetail = self.currentWeather else {
+        
+        guard let currentWeatherDetail = viewModel.currentWeather else {
             return UIView()
         }
         
@@ -132,8 +85,6 @@ class ViewController: UIViewController {
         
         weatherDetails.text = currentWeatherDetail.weather[0].description
             
-        
-        
         [currentTemp, currentLocation, weatherDetails].forEach{headerView.addSubview($0)}
         [currentTemp, currentLocation, weatherDetails].forEach{$0.textAlignment = .center}
         
@@ -147,14 +98,14 @@ class ViewController: UIViewController {
 extension ViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return dailyDataEntry.count
+        return viewModel.dailyDataEntry.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: WeatherTableViewCell.identifier) as? WeatherTableViewCell else {
             return UITableViewCell()
         }
-        cell.configureCell(with: dailyDataEntry[indexPath.row])
+        cell.configureCell(with: viewModel.dailyDataEntry[indexPath.row])
         return cell
     }
 }
@@ -164,18 +115,3 @@ extension ViewController: UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
     }
 }
-
-extension ViewController: CLLocationManagerDelegate {
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if !locations.isEmpty, currentLocation == nil {
-            currentLocation = locations.first
-            locationManager.stopUpdatingLocation()
-            self.requestWeatherForLocation()
-        }
-    }
-}
-
-//api.openweathermap.org/data/2.5/find?lat=37.33233141&lon=\(long)&appid=\(key)
-//https://api.openweathermap.org/data/2.5/onecall?lat=37.33233141&lon=-122.0312186&exclude=minutely,current&appid=9250e45e424e1ca6a05fe8f347df00aa
-
-//let url = URL(string: "https://api.openweathermap.org/data/2.5/onecall?lat=\(lat)&lon=\(long)&exclude=minutely,current&appid=\(key)")
